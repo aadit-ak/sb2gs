@@ -69,7 +69,7 @@ DEFAULT_DIRECTION = 90
 
 
 def decompile_sprite_properties(ctx: Ctx) -> None:
-    ctx.iprintln("set_layer_order ", syntax.number(ctx.layer_order), ";")
+    # Layer order is handled via goboscript.toml layers config
     if not ctx.visible:
         ctx.iprintln("hide;")
     if ctx.x != DEFAULT_X:
@@ -81,8 +81,6 @@ def decompile_sprite_properties(ctx: Ctx) -> None:
     if ctx.direction != DEFAULT_DIRECTION:
         ctx.iprintln("point_in_direction ", syntax.number(ctx.direction), ";")
     decompile_rotation_style(ctx)
-    if ctx.draggable:
-        ctx.iprintln("set_draggable;")
 
 
 def decompile_rotation_style(ctx: Ctx) -> None:
@@ -132,6 +130,16 @@ def decompile_lists(ctx: Ctx) -> None:
         ctx.println("];")
 
 
+def decompile_draggable(ctx: Ctx) -> None:
+    """Emit set_drag_mode_draggable inside a synthetic onflag event."""
+    if ctx.is_stage or not ctx.draggable:
+        return
+    ctx.iprintln("onflag {")
+    with ctx.indent():
+        ctx.iprintln("set_drag_mode_draggable;")
+    ctx.iprintln("}")
+
+
 def decompile_sprite(ctx: Ctx) -> None:
     ast.transform(ctx)
     decompile_properties(ctx)
@@ -139,4 +147,5 @@ def decompile_sprite(ctx: Ctx) -> None:
     decompile_sounds(ctx)
     decompile_variables(ctx)
     decompile_lists(ctx)
+    decompile_draggable(ctx)
     decompile_events(ctx)

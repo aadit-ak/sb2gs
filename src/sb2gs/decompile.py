@@ -29,11 +29,13 @@ def decompile(input: Path, output: Path) -> None:
     stage = next(target for target in project.targets if target.isStage)
     sprites = [target for target in project.targets if not target.isStage]
 
+    fixed = set()
+    for costume in stage.costumes:
+        costumes.fix_center(costume, assets_path.joinpath(costume.md5ext), fixed)
     ctx = Ctx(stage)
     with output.joinpath("stage.gs").open("w") as file:
         decompile_sprite(ctx)
         file.write(str(ctx))
-    fixed = set()
     for target in sprites:
         ctx = Ctx(target)
         for costume in target.costumes:

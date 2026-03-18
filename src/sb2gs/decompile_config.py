@@ -50,6 +50,39 @@ def parse_turbowarp_config_comment(text: str | None) -> dict[str, Any] | None:
         return None
 
 
+def compute_layers(project: JSONObject) -> list[str]:
+    """Compute sprite layer ordering from the project targets."""
+    sprites = [t for t in project.targets if not t.isStage]
+    sprites.sort(key=lambda t: t.layerOrder)
+    return [t.name for t in sprites]
+
+
+def compute_current_costumes(project: JSONObject) -> dict[str, int]:
+    """Collect non-zero currentCostume values for all targets."""
+    result: dict[str, int] = {}
+    for target in project.targets:
+        idx = target.currentCostume
+        if idx != 0:
+            name = "Stage" if target.isStage else target.name
+            result[name] = idx
+    return result
+
+
+def compute_variable_names() -> dict[str, str]:
+    """Build sanitized → original name mapping for identifiers that changed.
+
+    Only includes entries where the goboscript identifier differs from the
+    original Scratch variable/list name (e.g., "health" → "HEALTH").
+    """
+    from . import syntax
+
+    result: dict[str, str] = {}
+    for original, sanitized in syntax.identifier_map.items():
+        if original != sanitized:
+            result[sanitized] = original
+    return result
+
+
 def decompile_config(project: JSONObject, output: Path) -> None:
     config = Config()
     data = parse_turbowarp_config_comment(find_turbowarp_config_comment(project)) or {}
@@ -62,5 +95,13 @@ def decompile_config(project: JSONObject, output: Path) -> None:
     config.high_quality_pen = data.get("hq") is True
     config.stage_width = data.get("width")
     config.stage_height = data.get("height")
+    config_dict = config.__dict__
+    config_dict["layers"] = compute_layers(project)
+    current_costumes = compute_current_costumes(project)
+    if current_costumes:
+        config_dict["current_costumes"] = current_costumes
+    variable_names = compute_variable_names()
+    if variable_names:
+        config_dict["variable_names"] = variable_names
     with output.joinpath("goboscript.toml").open("w") as file:
-        toml.dump(config.__dict__, file)
+        toml.dump(config_dict, file)
