@@ -46,7 +46,8 @@ def normalize_project(project: JSONObject) -> None:
     for target in project.targets:
         normalize_target(target)
         for block in target.blocks._.values():
-            normalize_block(block)
+            if isinstance(block, JSONObject):
+                normalize_block(block)
 
 
 def decompile(input: Path, output: Path) -> None:

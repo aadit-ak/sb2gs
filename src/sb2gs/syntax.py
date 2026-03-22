@@ -102,6 +102,16 @@ def identifier(og: str) -> str:
     if og in identifier_map:
         return identifier_map[og]
 
+    for existing_og, existing_iden in identifier_map.items():
+        if existing_og.casefold() == og.casefold():
+            identifier_map[og] = existing_iden
+            logging.info(
+                "Mapped identifier %r -> %r via case-insensitive reuse",
+                og,
+                existing_iden,
+            )
+            return existing_iden
+
     iden = og
 
     iden = "_".join(WHITESPACE_RE.split(iden))
