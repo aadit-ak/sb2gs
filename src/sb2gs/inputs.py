@@ -26,8 +26,11 @@ def block_value(input: builtins.list[Any] | None) -> str | None:
     if len(input[1]) < 2:
         return None
     value = input[1][1]
-    assert isinstance(value, str)
-    return value
+    if isinstance(value, str):
+        return value
+    if isinstance(value, int | float):
+        return str(value)
+    return None
 
 
 def block(ctx: Ctx, block: Block, input_name: str) -> Block | None:

@@ -22,16 +22,16 @@ class Ctx(StringBuilder):
         self.variables: JSONObject = target.variables
         self.lists: JSONObject = target.lists
         self.blocks: dict[str, Block] = target.blocks._
-        self.volume: float = target.volume
-        self.layer_order: int = target.layerOrder
+        self.volume: float = target._.get("volume", DEFAULT_VOLUME)
+        self.layer_order: int = target._.get("layerOrder", 0)
         if not self.is_stage:
-            self.visible: bool = target.visible
-            self.x: float = target.x
-            self.y: float = target.y
-            self.size: float = target.size
-            self.direction: float = target.direction
-            self.draggable: bool = target.draggable
-            self.rotation_style: str = target.rotationStyle
+            self.visible: bool = target._.get("visible", True)
+            self.x: float = target._.get("x", DEFAULT_X)
+            self.y: float = target._.get("y", DEFAULT_Y)
+            self.size: float = target._.get("size", DEFAULT_SIZE)
+            self.direction: float = target._.get("direction", DEFAULT_DIRECTION)
+            self.draggable: bool = target._.get("draggable", False)
+            self.rotation_style: str = target._.get("rotationStyle", "all around")
 
 
 def decompile_constexpr(ctx: Ctx, value: object) -> None:

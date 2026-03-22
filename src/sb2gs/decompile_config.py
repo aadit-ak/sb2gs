@@ -61,7 +61,7 @@ def compute_current_costumes(project: JSONObject) -> dict[str, int]:
     """Collect non-zero currentCostume values for all targets."""
     result: dict[str, int] = {}
     for target in project.targets:
-        idx = target.currentCostume
+        idx = target._.get("currentCostume", 0)
         if idx != 0:
             name = "Stage" if target.isStage else target.name
             result[name] = idx
