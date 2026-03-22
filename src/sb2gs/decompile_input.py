@@ -23,8 +23,14 @@ def decompile_input(ctx: Ctx, input_name: str, block: Block) -> None:
         decompile_expr(ctx, ctx.blocks[block_id])
         return
     input_type = InputType(input[1][0])
-    input_value: str = input[1][1]
-    assert isinstance(input_value, str)
+    raw_input_value = input[1][1]
+    if isinstance(raw_input_value, str):
+        input_value = raw_input_value
+    elif isinstance(raw_input_value, int | float):
+        input_value = str(raw_input_value)
+    else:
+        msg = f"Unsupported literal input value {raw_input_value!r}"
+        raise TypeError(msg)
     if input_type in {InputType.VAR, InputType.LIST}:
         ctx.print(syntax.identifier(input_value))
         return

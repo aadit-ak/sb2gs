@@ -66,6 +66,12 @@ BLOCKS = {
                                     "previous backdrop": "previous_backdrop",
                                     "random backdrop": "random_backdrop",
                                 }),
+    "looks_switchbackdroptoandwait": _("switch_backdrop", ["BACKDROP"], menu="BACKDROP",
+                                field="BACKDROP", overloads={
+                                    "next backdrop": "next_backdrop",
+                                    "previous backdrop": "previous_backdrop",
+                                    "random backdrop": "random_backdrop",
+                                }),
     "looks_nextbackdrop":       _("next_backdrop", []),
     "looks_setsizeto":          _("set_size", ["SIZE"]),
     "looks_changesizeby":       _("change_size", ["CHANGE"]),
